@@ -1,0 +1,84 @@
+services:
+  rd:
+    image: redis
+    networks:
+      - common
+
+  mq:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - common
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 3
+
+  evo:
+    image: atendai/evolution-api
+    depends_on:
+      mq:
+        condition: service_healthy
+      rd:
+        condition: service_started
+    ports:
+      - "9339:8080"
+    environment:
+      - AUTHENTICATION_API_KEY=secret
+
+      # DB
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://postgres:secret@pgs:5432/evolution?schema=public
+
+      # REDIS
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://rd:6379/6
+      - CACHE_REDIS_PREFIX_KEY=evolution
+      - CACHE_REDIS_SAVE_INSTANCES=false
+      - CACHE_LOCAL_ENABLED=false
+
+      # QUEUE
+      - RABBITMQ_ENABLED=true
+      - RABBITMQ_URI=amqp://admin:admin@mq:5672
+      - RABBITMQ_EXCHANGE_NAME=evolution
+      - RABBITMQ_GLOBAL_ENABLED=false
+
+      # EVENTS
+      - RABBITMQ_EVENTS_APPLICATION_STARTUP=true
+      - RABBITMQ_EVENTS_INSTANCE_CREATE=true
+      - RABBITMQ_EVENTS_INSTANCE_DELETE=true
+      - RABBITMQ_EVENTS_QRCODE_UPDATED=true
+      - RABBITMQ_EVENTS_MESSAGES_SET=true
+      - RABBITMQ_EVENTS_MESSAGES_UPSERT=true
+      - RABBITMQ_EVENTS_MESSAGES_EDITED=true
+      - RABBITMQ_EVENTS_MESSAGES_UPDATE=true
+      - RABBITMQ_EVENTS_MESSAGES_DELETE=true
+      - RABBITMQ_EVENTS_SEND_MESSAGE=true
+      - RABBITMQ_EVENTS_CONTACTS_SET=true
+      - RABBITMQ_EVENTS_CONTACTS_UPSERT=true
+      - RABBITMQ_EVENTS_CONTACTS_UPDATE=true
+      - RABBITMQ_EVENTS_PRESENCE_UPDATE=true
+      - RABBITMQ_EVENTS_CHATS_SET=true
+      - RABBITMQ_EVENTS_CHATS_UPSERT=true
+      - RABBITMQ_EVENTS_CHATS_UPDATE=true
+      - RABBITMQ_EVENTS_CHATS_DELETE=true
+      - RABBITMQ_EVENTS_GROUPS_UPSERT=true
+      - RABBITMQ_EVENTS_GROUP_UPDATE=true
+      - RABBITMQ_EVENTS_GROUP_PARTICIPANTS_UPDATE=true
+      - RABBITMQ_EVENTS_CONNECTION_UPDATE=true
+      - RABBITMQ_EVENTS_CALL=true
+      - RABBITMQ_EVENTS_TYPEBOT_START=true
+      - RABBITMQ_EVENTS_TYPEBOT_CHANGE_STATUS=true
+    networks:
+      - common
+
+networks:
+  common:
+    name: common
+    external: true
