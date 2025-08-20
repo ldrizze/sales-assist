@@ -46,13 +46,13 @@ SET row_security = off;
 
 --
 -- TOC entry 6 (class 2615 OID 24746)
--- Name: maromba; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: assist; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA maromba;
+CREATE SCHEMA assist;
 
 
-ALTER SCHEMA maromba OWNER TO postgres;
+ALTER SCHEMA assist OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -60,10 +60,10 @@ SET default_table_access_method = heap;
 
 --
 -- TOC entry 219 (class 1259 OID 24754)
--- Name: chat_logs; Type: TABLE; Schema: maromba; Owner: postgres
+-- Name: chat_logs; Type: TABLE; Schema: assist; Owner: postgres
 --
 
-CREATE TABLE maromba.chat_logs (
+CREATE TABLE assist.chat_logs (
     id serial NOT NULL,
     phone_number character varying NOT NULL,
     data json,
@@ -71,26 +71,26 @@ CREATE TABLE maromba.chat_logs (
 );
 
 
-ALTER TABLE maromba.chat_logs OWNER TO postgres;
+ALTER TABLE assist.chat_logs OWNER TO postgres;
 
 --
 -- TOC entry 218 (class 1259 OID 24747)
--- Name: suspended_chats; Type: TABLE; Schema: maromba; Owner: postgres
+-- Name: suspended_chats; Type: TABLE; Schema: assist; Owner: postgres
 --
 
-CREATE TABLE maromba.suspended_chats (
+CREATE TABLE assist.suspended_chats (
     phone_number character varying NOT NULL,
     data json
 );
 
 
-ALTER TABLE maromba.suspended_chats OWNER TO postgres;
+ALTER TABLE assist.suspended_chats OWNER TO postgres;
 
 --
--- Name: orders; Type: TABLE; Schema: maromba; Owner: postgres
+-- Name: orders; Type: TABLE; Schema: assist; Owner: postgres
 --
 
-CREATE TABLE maromba.orders (
+CREATE TABLE assist.orders (
     id serial NOT NULL,
     phone_number character varying NOT NULL,
     data json
@@ -98,30 +98,30 @@ CREATE TABLE maromba.orders (
 );
 
 
-ALTER TABLE maromba.orders OWNER TO postgres;
+ALTER TABLE assist.orders OWNER TO postgres;
 
 --
 -- TOC entry 3218 (class 2606 OID 24761)
--- Name: chat_logs chat_logs_pk; Type: CONSTRAINT; Schema: maromba; Owner: postgres
+-- Name: chat_logs chat_logs_pk; Type: CONSTRAINT; Schema: assist; Owner: postgres
 --
 
-ALTER TABLE ONLY maromba.chat_logs
+ALTER TABLE ONLY assist.chat_logs
     ADD CONSTRAINT chat_logs_pk PRIMARY KEY (id, phone_number);
 
 
 --
 -- TOC entry 3216 (class 2606 OID 24753)
--- Name: suspended_chats suspended_chats_pk; Type: CONSTRAINT; Schema: maromba; Owner: postgres
+-- Name: suspended_chats suspended_chats_pk; Type: CONSTRAINT; Schema: assist; Owner: postgres
 --
 
-ALTER TABLE ONLY maromba.suspended_chats
+ALTER TABLE ONLY assist.suspended_chats
     ADD CONSTRAINT suspended_chats_pk PRIMARY KEY (phone_number);
 
 --
--- Name: orders orders_pk; Type: CONSTRAINT; Schema: maromba; Owner: postgres
+-- Name: orders orders_pk; Type: CONSTRAINT; Schema: assist; Owner: postgres
 --
 
-ALTER TABLE ONLY maromba.orders
+ALTER TABLE ONLY assist.orders
     ADD CONSTRAINT orders_pk PRIMARY KEY (id, phone_number);
 
 
